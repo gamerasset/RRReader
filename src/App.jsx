@@ -8,8 +8,7 @@ const ReaderApp = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [userAnswers, setUserAnswers] = useState({});
   const [score, setScore] = useState(null);
-  const [wrongQuestions, setWrongQuestions] = useState([]); // 错题索引（仅用于显示数量）
-  const [wrongQuestionObjects, setWrongQuestionObjects] = useState([]); // 错题的完整数据
+  const [wrongQuestions, setWrongQuestions] = useState([]); // 错题索引
   const [nextAction, setNextAction] = useState(''); // 下一步操作提示
   const [showResultModal, setShowResultModal] = useState(false); // 结果弹窗
   const [pendingAction, setPendingAction] = useState(null); // 待执行的操作
@@ -51,8 +50,8 @@ const ReaderApp = () => {
    // 提交 Quiz 并计算难度调整
   const submitQuiz = () => {
     try {
-      // Guard: no quiz data
-      if (!content?.quiz || !Array.isArray(content.quiz)) {
+      // Guard: no quiz data or empty
+      if (!content?.quiz || !Array.isArray(content.quiz) || content.quiz.length === 0) {
         alert('当前没有可用的测验题目，请切换章节或难度。');
         return;
       }
@@ -63,22 +62,20 @@ const ReaderApp = () => {
 
       let correctCount = 0;
       const wrongIndices = []; // 错题索引
-      const wrongObjs = []; // 错题的完整数据（包含用户答案）
 
       currentQuiz.forEach((q, idx) => {
+        if (!q || typeof q !== 'object') return;
         const userAnswer = userAnswers[idx];
         if (userAnswer === q.answerIndex) {
           correctCount++;
         } else {
           wrongIndices.push(idx);
-          wrongObjs.push({ ...q, userAnswer: userAnswer });
         }
       });
 
       const finalScore = (correctCount / currentQuiz.length) * 100;
       setScore(finalScore);
       setWrongQuestions(wrongIndices); // 保存错题索引
-      setWrongQuestionObjects(wrongObjs); // 保存错题完整数据（用于弹窗）（基于当前quiz的索引）
 
       // 难度调整逻辑与下一步操作提示
       let nextLevel = currentLevel;
@@ -141,7 +138,6 @@ const ReaderApp = () => {
     setUserAnswers({});
     setScore(null);
     setWrongQuestions([]);
-    setWrongQuestionObjects([]);
     setNextAction('');
     setPendingAction(null);
     setModalQuizData(null);
@@ -202,79 +198,30 @@ const ReaderApp = () => {
         /* Quiz 区域 */
         <div className="animate-slideUp">
           <h2 className="text-xl font-bold mb-6">阅读理解检查</h2>
-          {content?.quiz && content.quiz.map((q, qIdx) => (
-            <div key={qIdx} className="mb-8 p-4 bg-white rounded-lg shadow-sm">
-              <p className="font-bold mb-4">{qIdx + 1}. {q.question}</p>
-              <div className="space-y-2">
-                {q.options.map((opt, oIdx) => (
-                  <label key={oIdx} className="flex items-center space-x-3 p-2 border rounded hover:bg-amber-50 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name={`q-${qIdx}`} 
-                      checked={userAnswers[qIdx] === oIdx}
-                      onChange={() => setUserAnswers({...userAnswers, [qIdx]: oIdx})}
-                      className="form-radio text-amber-700"
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-          
-          {score !== null && (
-            <div className="mb-4">
-              {/* 得分显示 */}
-              <div className={`p-4 rounded text-center font-bold mb-4 ${score >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                得分: {score.toFixed(0)}%
-              </div>
-
-              {/* 错题展示 */}
-              {wrongQuestions.length > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                  <h3 className="font-bold text-amber-900 mb-3">❌ 答错的题目：</h3>
-                  {wrongQuestions.map((qIdx) => {
-                    const question = content.quiz[qIdx];
-                    const userAnswer = userAnswers[qIdx];
-                    const correctAnswer = question.answerIndex;
-                    return (
-                      <div key={qIdx} className="mb-3 p-3 bg-white rounded border-l-4 border-red-400">
-                        <p className="font-medium text-gray-800 mb-2">
-                          {qIdx + 1}. {question.question}
-                        </p>
-                        <div className="space-y-1 text-sm">
-                          {(question.options || []).map((opt, oIdx) => {
-                            let color = 'text-gray-600';
-                            let icon = '○';
-                            if (oIdx === correctAnswer) {
-                              color = 'text-green-600 font-bold';
-                              icon = '✓';
-                            } else if (oIdx === userAnswer && userAnswer !== correctAnswer) {
-                              color = 'text-red-600';
-                              icon = '✗';
-                            }
-                            return (
-                              <p key={oIdx} className={`${color}`}>
-                                {icon} {opt}
-                              </p>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
+          {content?.quiz && content.quiz.map((q, qIdx) => {
+            // Guard against invalid question data
+            if (!q || !q.options) return null;
+            return (
+              <div key={qIdx} className="mb-8 p-4 bg-white rounded-lg shadow-sm">
+                <p className="font-bold mb-4">{qIdx + 1}. {q.question || ''}</p>
+                <div className="space-y-2">
+                  {(q.options || []).map((opt, oIdx) => (
+                    <label key={oIdx} className="flex items-center space-x-3 p-2 border rounded hover:bg-amber-50 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name={`q-${qIdx}`} 
+                        checked={userAnswers[qIdx] === oIdx}
+                        onChange={() => setUserAnswers({...userAnswers, [qIdx]: oIdx})}
+                        className="form-radio text-amber-700"
+                      />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
                 </div>
-              )}
-
-              {/* 下一步操作提示 */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <p className="text-blue-800 font-medium">
-                  📢 提示：{nextAction}
-                </p>
               </div>
-            </div>
-          )}
-
+            );
+          })}
+          
           <button 
             onClick={submitQuiz}
             disabled={!content?.quiz || Object.keys(userAnswers).length < content.quiz.length}
@@ -303,20 +250,23 @@ const ReaderApp = () => {
                  得分: {(typeof score === 'number' ? score.toFixed(0) : '0')}%
                </div>
 
-                  {/* 错题展示 */}
-                  {wrongQuestionObjects.length > 0 && (
+                  {/* 错题展示 - 使用提交时的快照数据 */}
+                  {wrongQuestions.length > 0 && modalQuizData && (
                     <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                       <h3 className="font-bold text-amber-900 mb-3">❌ 答错的题目：</h3>
-                      {wrongQuestionObjects.map((q, idx) => {
-                        const correctAnswer = q.answerIndex;
-                        const userAnswer = q.userAnswer;
+                      {wrongQuestions.map((qIdx, displayIdx) => {
+                        // Use the snapshot from submission time
+                        const question = modalQuizData[qIdx];
+                        if (!question) return null;
+                        const userAnswer = userAnswers[qIdx];
+                        const correctAnswer = question.answerIndex;
                         return (
-                          <div key={idx} className="mb-3 p-3 bg-white rounded border-l-4 border-red-400">
+                          <div key={qIdx} className="mb-3 p-3 bg-white rounded border-l-4 border-red-400">
                             <p className="font-medium text-gray-800 mb-2">
-                              {idx + 1}. {q.question}
+                              {displayIdx + 1}. {question.question}
                             </p>
                             <div className="space-y-1 text-sm">
-                              {(q.options || []).map((opt, oIdx) => {
+                              {(question.options || []).map((opt, oIdx) => {
                                 let color = 'text-gray-600';
                                 let icon = '○';
                                 if (oIdx === correctAnswer) {
