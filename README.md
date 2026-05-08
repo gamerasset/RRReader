@@ -1,16 +1,96 @@
-# React + Vite
+> **一句话简介**：将全球热门“修仙”网文 IP 与 AI 自适应算法结合，打造沉浸式英语学习“心流”体验。
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 基本信息
 
-Currently, two official plugins are available:
+- **赛道**：[AI 出海] / [AI 教育]
+- **赛区**：[北京]
+- **团队名**：GamerAsset
+- **主联系人**：邹连双
+- **作品形态**：[综合]
+- **在线体验**：[https://rr-reader.vercel.app/](https://rr-reader.vercel.app/)
+- **路演 PPT**：[查看详细幻灯片](https://docs.qq.com/slide/DR3ZTSW1CQ2JxY1Ra)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 👥 团队介绍
 
-## React Compiler
+| 角色 | 姓名 | 简介与背景 |
+| :--- | :--- | :--- |
+| **队长/作者** | 邹连双 | 奥数与信息竞赛教练，深耕编程教育与算法教学 |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 一、 问题陈述
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 1. 你解决的是谁的什么问题？
+解决**非母语英语学习者**在阅读过程中面临的“材料枯燥”和“难度不匹配”问题。
+- **痛点 A**：传统教材内容刻板，缺乏情感共鸣，用户难以坚持。
+- **痛点 B**：原生内容难度波动大，生词率过高导致挫败感，无法进入“i+1”最佳习得区。
+
+### 2. 这个问题以前是怎么被解决的？
+主要依靠静态分级读物（如牛津树）或查单词工具。这些方式内容生产周期长、更新慢，且无法根据用户实时的测试表现**动态切换**难度。
+
+### 3. 为什么用 AI 能比之前更好地解决？
+AI 可以实时重构文本。我们将同一故事片段实时转化为不同蓝思值（Lexile）的等级（L1/L2/L3），并结合 AI 测验反馈实现自动化的学习路径重定向，构建“阅读-测验-反馈-难度动态调整”的闭环。
+
+---
+
+## 二、 解决方案
+
+### 1. 你的产品或作品是什么？
+**RRReader** 是一款创新的 AI 自适应阅读器。它利用中国“修仙”爽文的强大叙事驱动力，结合 AI 分级渲染技术，让用户在追求剧情的过程中自然而然地提升英语水平。
+
+### 2. 典型使用场景描述
+一名海外修仙小说爱好者阅读《凡骨御天传》：
+1. **初始匹配**：系统为其匹配 L2（中等）难度。
+2. **交互阅读**：遇到生词，点击即可查看 AI 提供的灵语翻译，心流不中断。
+3. **参悟测试**：章节结束，进行 Quiz 测验。
+4. **自适应跳转**：
+   - **突破**：若满分，系统提示“修为精进”，下一章自动升至 L3，解锁更细腻、更爽的剧情。
+   - **闭关**：若得分低，系统判定为“根基不牢”，降至 L1 难度重读本章，确保彻底理解。
+
+### 3. 最核心的功能或亮点
+- **难度即奖励**：高难度文本不仅仅是词汇更难，情节描写也更丰富、爽点更密集，利用**剧情诱惑**激发学习动力。
+- **动态重定向 (Rerouting)**：无需人工干预，系统根据正确率实时计算并切换文本版本。
+
+---
+
+## 三、 技术或创意实现
+
+### 1. AI 模型与工具
+- **大模型**：Gemini, DeepSeek (用于文本分级重构与测验生成)
+- **前端架构**：Vite + React + Tailwind CSS
+- **AI Coding 辅助**：Claude Code, Gemini CLI, Cursor
+
+### 2. 整体创作流程
+1. **语料预选**：挑选高悬念、高流量的中文修仙网文。
+2. **AI 重塑**：利用 LLM 将中文原著翻译并重写成符合 L1/L2/L3 不同蓝思值标准的英文版本。
+3. **逻辑分层**：基于 React 状态机开发自适应调度引擎。
+
+### 3. 关键技术/创意亮点
+- **情节差异化逻辑**：准备同一内容的多段文本。高等级文本通过更细腻的心理描写和华丽的打斗辞藻，让用户为了“看爽文”而主动挑战高难度词汇。
+- **零延迟切换**：前端预加载机制确保用户在难度跳转时拥有无缝的阅读体验。
+
+---
+
+## 四、 现状与计划
+
+- **当前进展**：已完成纯前端核心功能 Demo，实现了完整的“读-测-跳”逻辑闭环。
+- **用户反馈**：目前处于内部测试阶段。
+- **后续计划**：
+  - **实时生成**：接入 AI API 实现动态剧情分支。
+  - **个性化解析**：由 AI 针对测验错项生成专属语法解析。
+  - **数据存储**：增加本地进度存储功能。
+
+---
+
+## 五、 影响力与可持续性
+
+- **目标规模**：全球 2 亿+ 线上网文读者，特别是拉美和东南亚的英语学习需求群体。
+- **增长策略**：
+  - **社区驱动**：通过 GitHub 开源吸引技术与教育爱好者。
+  - **IP 营销**：利用修仙文化的“境界突破”概念进行传播。
+- **未来 3 个月指标**：GitHub Star 500+，达成与教育机构的内容集成测试。
+
+---
+
+## 六、 附加材料
+- **预览地址**：[https://rr-reader.vercel.app/](https://rr-reader.vercel.app/)
